@@ -62,13 +62,17 @@ const r = await fetch('https://www.proofoftype.com/api/v1/verify', {
     token: req.body.comment_proof,
     text: req.body.comment,              // the exact text
     origin: 'https://your-site.com',     // your site
+    max_age_seconds: 600,                // made in the last 10 minutes
   }),
 }).then((res) => res.json());
 
-if (!r.valid || !r.text_matches || !r.origin_matches) {
+if (!r.valid || !r.text_matches || !r.origin_matches || !r.fresh) {
   return res.status(400).send('Please type your comment in the box.');
 }
+// Use each proof once: store r.proof.id with the comment, refuse repeats
+// (proof tokens are public — they're in proof links).
 // r.proof.author: the Proof of Type username who typed it
+// r.proof.link: a link pasted with the text, if any
 ```
 
 Prefer a helper? Copy [`server.mjs`](server.mjs) into your project (`verifyProof({ token, text, origin })`).
@@ -127,7 +131,7 @@ input.on('change', ({ words }) => {});
 const proof = await input.verify();   // { text, html, token, author, score, url, … }
 ```
 
-Options: `name`, `placeholder`, `maxWords` (10–3000), `theme` (`auto` | `light` | `dark`), `button`, `buttonLabel`, `form`, `typewriter` (show the carriage animation, default `true`), `typewriterColor` (e.g. `'#e11d48'`), `sound` (default `true`), `allowLinks` (default `true`: one pasted link comes back as `result.link` / `<name>_link`, signed in the proof; `false` blocks all pasting). The same options work as `data-` attributes (`data-max-words`, `data-button-label`, …).
+Options: `name`, `placeholder`, `maxWords` (10–3000), `theme` (`auto` | `light` | `dark`), `button`, `buttonLabel`, `form`, `typewriter` (show the carriage animation, default `true`), `typewriterColor` (e.g. `'#e11d48'`), `sound` (default `true`), `allowLinks` (default `true`: one pasted link is signed in the proof, read it as `proof.link` from the verify response; `false` blocks all pasting). `result.html` is display formatting only and isn't covered by the proof: sanitize it, or use `result.text`. The same options work as `data-` attributes (`data-max-words`, `data-button-label`, …).
 
 Events: `ready`, `signin`, `change`, `verified`, `error`, `resize`, also dispatched on the element as DOM events (`proofoftype:verified`).
 

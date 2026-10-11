@@ -1,5 +1,5 @@
 /*!
- * Proof of Type Input — v1.2.0
+ * Proof of Type Input — v1.3.0
  * Prove a human typed that. https://www.proofoftype.com/developers
  * MIT License. Source: https://github.com/proofoftype/proofoftype-input
  *
@@ -22,11 +22,17 @@
   'use strict';
   if (window.ProofOfType && window.ProofOfType.version) return;
 
-  var VERSION = '1.2.0';
+  var VERSION = '1.3.0';
   var script = document.currentScript;
+  // The input always comes from Proof of Type, wherever this file is served
+  // from (a CDN or bundle copy must not change whom we trust). Local dev
+  // servers are allowed so the site can be developed.
   var BASE = (function () {
-    try { return new URL(script && script.src ? script.src : 'https://www.proofoftype.com/').origin; }
-    catch (e) { return 'https://www.proofoftype.com'; }
+    try {
+      var o = new URL(script && script.src ? script.src : 'https://www.proofoftype.com/');
+      if (o.hostname === 'localhost' || o.hostname === '127.0.0.1') return o.origin;
+    } catch (e) { /* fall through */ }
+    return 'https://www.proofoftype.com';
   })();
   var counter = 0;
   var instances = {};
@@ -58,8 +64,8 @@
    * @param {boolean} [options.typewriter]  show the typewriter carriage animation (default true)
    * @param {string}  [options.typewriterColor]  its colour: "#e11d48", "#333" or a CSS colour name
    * @param {boolean} [options.sound]       typing sound on at first (default true; people can toggle it)
-   * @param {boolean} [options.allowLinks]  allow pasting one link with the text (default true). It comes back
-   *                                        as result.link (and a <name>_link form field), signed in the proof
+   * @param {boolean} [options.allowLinks]  allow pasting one link with the text (default true). It is signed
+   *                                        in the proof: read proof.link from POST /api/v1/verify
    */
   function mount(target, options) {
     var el = typeof target === 'string' ? document.querySelector(target) : target;
@@ -121,7 +127,7 @@
         delete instances[id];
         if (form) form.removeEventListener('submit', onSubmit, true);
         if (iframe.parentNode) iframe.parentNode.removeChild(iframe);
-        if (fields) { fields.text.remove(); fields.proof.remove(); fields.link.remove(); }
+        if (fields) { fields.text.remove(); fields.proof.remove(); }
         el.__proofoftype = null;
       },
       _receive: function (d) {
@@ -164,14 +170,13 @@
     function setFields(text, token, link) {
       if (!form) return;
       if (!fields) {
-        fields = { text: hidden(name), proof: hidden(name + '_proof'), link: hidden(name + '_link') };
+        fields = { text: hidden(name), proof: hidden(name + '_proof') };
         el.appendChild(fields.text);
         el.appendChild(fields.proof);
-        el.appendChild(fields.link);
       }
       fields.text.value = text;
       fields.proof.value = token;
-      fields.link.value = link || '';
+      void link;   // a pasted link is in the proof: read proof.link from the verify response
     }
     function hidden(n) { var i = document.createElement('input'); i.type = 'hidden'; i.name = n; return i; }
 

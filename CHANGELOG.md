@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.3.0 — 2026-10-11
+- Security: verify with `max_age_seconds` (→ `fresh`) and store `proof.id` to use each proof once; `server.mjs` does the freshness check (default 10 min).
+- A pasted link is read from the verify response (`proof.link`); the unverified `<name>_link` form field is gone. `result.html` is display-only (sanitize it).
+- The SDK always talks to www.proofoftype.com.
+
 ## 1.2.0 — 2026-10-11
 - Options `typewriter` (hide the carriage animation), `typewriterColor`, and `sound` (start muted); `data-typewriter`, `data-typewriter-color`, `data-sound`.
 - Option `allowLinks` (`data-allow-links`): a pasted link now reaches your site as `result.link` / `<name>_link`, signed in the proof; `false` blocks all pasting.

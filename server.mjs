@@ -12,21 +12,24 @@
 const API = 'https://www.proofoftype.com/api/v1/verify';
 
 /**
- * @param {{ token: string, text: string, origin: string, fetch?: typeof fetch }} p
+ * Also store proof.id and refuse one you've seen: proof tokens are public.
+ * A pasted link is proof.link (use it, not a form field).
+ * @param {{ token: string, text: string, origin: string, maxAgeSeconds?: number, fetch?: typeof fetch }} p
  * @returns {Promise<{ ok: true, proof: object } | { ok: false, reason: string }>}
  */
-export async function verifyProof({ token, text, origin, fetch: f = globalThis.fetch }) {
+export async function verifyProof({ token, text, origin, maxAgeSeconds = 600, fetch: f = globalThis.fetch }) {
   if (typeof token !== 'string' || !token) return { ok: false, reason: 'missing_token' };
   if (typeof text !== 'string') return { ok: false, reason: 'missing_text' };
   if (typeof origin !== 'string' || !origin) return { ok: false, reason: 'missing_origin' };
   const res = await f(API, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ token, text, origin }),
+    body: JSON.stringify({ token, text, origin, max_age_seconds: maxAgeSeconds }),
   });
   const r = await res.json().catch(() => ({}));
   if (!r.valid) return { ok: false, reason: r.reason || `http_${res.status}` };
   if (!r.text_matches) return { ok: false, reason: 'text_mismatch' };
   if (!r.origin_matches) return { ok: false, reason: 'origin_mismatch' };
+  if (r.fresh === false) return { ok: false, reason: 'stale' };
   return { ok: true, proof: r.proof };
 }
