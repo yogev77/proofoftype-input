@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.0 — 2026-10-11
+- Options `typewriter` (hide the carriage animation), `typewriterColor`, and `sound` (start muted); `data-typewriter`, `data-typewriter-color`, `data-sound`.
+- Option `allowLinks` (`data-allow-links`): a pasted link now reaches your site as `result.link` / `<name>_link`, signed in the proof; `false` blocks all pasting.
+
 ## 1.1.0 — 2026-10-11
 - MCP server for AI coding agents: https://www.proofoftype.com/mcp (get_quickstart, verify_proof, explain).
 - A small "Proof of Type" link in the bottom-right corner of every embedded input.

@@ -127,7 +127,7 @@ input.on('change', ({ words }) => {});
 const proof = await input.verify();   // { text, html, token, author, score, url, … }
 ```
 
-Options: `name`, `placeholder`, `maxWords` (10–3000), `theme` (`auto` | `light` | `dark`), `button`, `buttonLabel`, `form`. The same options work as `data-` attributes (`data-max-words`, `data-button-label`, …).
+Options: `name`, `placeholder`, `maxWords` (10–3000), `theme` (`auto` | `light` | `dark`), `button`, `buttonLabel`, `form`, `typewriter` (show the carriage animation, default `true`), `typewriterColor` (e.g. `'#e11d48'`), `sound` (default `true`), `allowLinks` (default `true`: one pasted link comes back as `result.link` / `<name>_link`, signed in the proof; `false` blocks all pasting). The same options work as `data-` attributes (`data-max-words`, `data-button-label`, …).
 
 Events: `ready`, `signin`, `change`, `verified`, `error`, `resize`, also dispatched on the element as DOM events (`proofoftype:verified`).
 

@@ -12,6 +12,14 @@ export interface ProofOfTypeOptions {
   buttonLabel?: string;
   /** Handle the surrounding <form>. Default true. */
   form?: boolean;
+  /** Show the typewriter carriage that strikes each letter. Default true. */
+  typewriter?: boolean;
+  /** Carriage and hammer colour: "#rgb", "#rrggbb" or a CSS colour name. */
+  typewriterColor?: string;
+  /** Typing sound on at first. Default true (people can toggle it). */
+  sound?: boolean;
+  /** Allow pasting one link with the text. Default true. Returned as `link`, signed in the proof. */
+  allowLinks?: boolean;
 }
 
 export interface ProofResult {
@@ -30,6 +38,8 @@ export interface ProofResult {
   proofId: string;
   /** Public proof page. */
   url: string;
+  /** A link pasted with the text (allowLinks), or null. Not part of the typed text. */
+  link: string | null;
 }
 
 export interface ProofOfTypeInput {
@@ -72,6 +82,7 @@ export interface VerifiedProof {
   chars: number;
   text_sha256: string;
   version: number;
+  link?: string;
 }
 
 export function verifyProof(p: { token: string; text: string; origin: string; fetch?: typeof fetch }):

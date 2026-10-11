@@ -1,5 +1,5 @@
 /*!
- * Proof of Type Input — v1.1.0
+ * Proof of Type Input — v1.2.0
  * Prove a human typed that. https://www.proofoftype.com/developers
  * MIT License. Source: https://github.com/proofoftype/proofoftype-input
  *
@@ -22,7 +22,7 @@
   'use strict';
   if (window.ProofOfType && window.ProofOfType.version) return;
 
-  var VERSION = '1.1.0';
+  var VERSION = '1.2.0';
   var script = document.currentScript;
   var BASE = (function () {
     try { return new URL(script && script.src ? script.src : 'https://www.proofoftype.com/').origin; }
@@ -55,6 +55,11 @@
    * @param {boolean} [options.button]      show the built-in "Verify" button (default: true, or false inside a form)
    * @param {string} [options.buttonLabel]
    * @param {boolean} [options.form]        handle the surrounding <form> (default true)
+   * @param {boolean} [options.typewriter]  show the typewriter carriage animation (default true)
+   * @param {string}  [options.typewriterColor]  its colour: "#e11d48", "#333" or a CSS colour name
+   * @param {boolean} [options.sound]       typing sound on at first (default true; people can toggle it)
+   * @param {boolean} [options.allowLinks]  allow pasting one link with the text (default true). It comes back
+   *                                        as result.link (and a <name>_link form field), signed in the proof
    */
   function mount(target, options) {
     var el = typeof target === 'string' ? document.querySelector(target) : target;
@@ -71,6 +76,10 @@
     if (o.theme) params.set('theme', String(o.theme));
     if (o.button === false) params.set('button', '0');
     if (o.buttonLabel) params.set('label', String(o.buttonLabel));
+    if (o.typewriter === false) params.set('typewriter', '0');
+    if (o.typewriterColor) params.set('twcolor', String(o.typewriterColor));
+    if (o.sound === false) params.set('sound', '0');
+    if (o.allowLinks === false) params.set('links', '0');
 
     var iframe = document.createElement('iframe');
     iframe.src = BASE + '/widget/input?' + params.toString();
@@ -106,13 +115,13 @@
           send({ type: 'pot:verify', requestId: requestId });
         });
       },
-      reset: function () { inst.result = null; setFields('', ''); send({ type: 'pot:reset' }); },
+      reset: function () { inst.result = null; setFields('', '', ''); send({ type: 'pot:reset' }); },
       focus: function () { send({ type: 'pot:focus' }); },
       destroy: function () {
         delete instances[id];
         if (form) form.removeEventListener('submit', onSubmit, true);
         if (iframe.parentNode) iframe.parentNode.removeChild(iframe);
-        if (fields) { fields.text.remove(); fields.proof.remove(); }
+        if (fields) { fields.text.remove(); fields.proof.remove(); fields.link.remove(); }
         el.__proofoftype = null;
       },
       _receive: function (d) {
@@ -120,9 +129,9 @@
         if (d.type === 'pot:ready') { ready = true; queue.splice(0).forEach(post); }
         if (d.type === 'pot:verified') {
           var r = { token: d.token, text: d.text, html: d.html, author: d.author, score: d.score, wpm: d.wpm,
-            words: d.words, chars: d.chars, url: d.url, proofId: d.proofId };
+            words: d.words, chars: d.chars, url: d.url, proofId: d.proofId, link: d.link || null };
           inst.result = r;
-          setFields(r.text, r.token);
+          setFields(r.text, r.token, r.link);
           settle(d.requestId, null, r);
         }
         if (d.type === 'pot:error') {
@@ -152,15 +161,17 @@
       });
     }
 
-    function setFields(text, token) {
+    function setFields(text, token, link) {
       if (!form) return;
       if (!fields) {
-        fields = { text: hidden(name), proof: hidden(name + '_proof') };
+        fields = { text: hidden(name), proof: hidden(name + '_proof'), link: hidden(name + '_link') };
         el.appendChild(fields.text);
         el.appendChild(fields.proof);
+        el.appendChild(fields.link);
       }
       fields.text.value = text;
       fields.proof.value = token;
+      fields.link.value = link || '';
     }
     function hidden(n) { var i = document.createElement('input'); i.type = 'hidden'; i.name = n; return i; }
 
@@ -180,7 +191,7 @@
       }, function () { submitting = false; });
     }
     if (form) {
-      setFields('', '');
+      setFields('', '', '');
       form.addEventListener('submit', onSubmit, true);
     }
 
@@ -203,6 +214,10 @@
         button: attr(el, 'button', null) === null ? undefined : attr(el, 'button') !== 'false',
         buttonLabel: attr(el, 'button-label', undefined),
         form: attr(el, 'form', 'true') !== 'false',
+        typewriter: attr(el, 'typewriter', 'true') !== 'false',
+        typewriterColor: attr(el, 'typewriter-color', undefined),
+        sound: attr(el, 'sound', 'true') !== 'false',
+        allowLinks: attr(el, 'allow-links', 'true') !== 'false',
       });
     }
   }
