@@ -1,0 +1,21 @@
+{
+  "name": "proofoftype-input",
+  "version": "1.1.0",
+  "description": "A text box that proves a human typed it, not AI. Embed the Proof of Type input and verify signed proof tokens on your server.",
+  "keywords": ["mcp", "human-verification", "ai-detection", "ai-generated-content", "proof-of-human", "anti-bot", "comments", "ugc", "content-authenticity", "jwt", "proofoftype"],
+  "homepage": "https://www.proofoftype.com/developers",
+  "repository": { "type": "git", "url": "https://github.com/yogev77/proofoftype-input.git" },
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": { "types": "./index.d.ts", "default": "./server.mjs" },
+    "./server": { "types": "./index.d.ts", "default": "./server.mjs" },
+    "./react": "./react.jsx",
+    "./sdk": "./sdk/v1.js"
+  },
+  "types": "./index.d.ts",
+  "files": ["sdk/", "server.mjs", "react.jsx", "index.d.ts", "README.md", "LICENSE", "CHANGELOG.md"],
+  "peerDependencies": { "react": ">=17" },
+  "peerDependenciesMeta": { "react": { "optional": true } },
+  "engines": { "node": ">=18" }
+}
