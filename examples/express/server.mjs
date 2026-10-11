@@ -1,7 +1,7 @@
 // Accept a comment only if Proof of Type proves a human typed it.
-// npm i express proofoftype-input
+// npm i express   (server.mjs is copied from this repo)
 import express from 'express';
-import { verifyProof } from 'proofoftype-input/server';
+import { verifyProof } from '../../server.mjs';
 
 const app = express();
 app.use(express.urlencoded({ extended: false }));

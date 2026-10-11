@@ -1,6 +1,6 @@
 // React wrapper for the Proof of Type input.
 //
-//   import { HumanInput } from 'proofoftype-input/react';
+//   import { HumanInput } from './react.jsx';   // copy this file into your project
 //   <HumanInput placeholder="Write a comment" onVerified={(r) => save(r.text, r.token)} />
 //
 // Loads https://www.proofoftype.com/sdk/v1.js once, then mounts the input.

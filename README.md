@@ -55,16 +55,23 @@ Pasted or generated text never gets a proof.
 Always check the proof before you save the text. Accept it only if it's valid, matches the text, and was made on your site.
 
 ```js
-import { verifyProof } from 'proofoftype-input/server';
+const r = await fetch('https://www.proofoftype.com/api/v1/verify', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    token: req.body.comment_proof,
+    text: req.body.comment,              // the exact text
+    origin: 'https://your-site.com',     // your site
+  }),
+}).then((res) => res.json());
 
-const r = await verifyProof({
-  token: req.body.comment_proof,
-  text: req.body.comment,
-  origin: 'https://your-site.com',
-});
-if (!r.ok) return res.status(400).send('Please type your comment in the box.');
+if (!r.valid || !r.text_matches || !r.origin_matches) {
+  return res.status(400).send('Please type your comment in the box.');
+}
 // r.proof.author: the Proof of Type username who typed it
 ```
+
+Prefer a helper? Copy [`server.mjs`](server.mjs) into your project (`verifyProof({ token, text, origin })`).
 
 Or call the API directly (no key needed):
 
@@ -126,11 +133,15 @@ Events: `ready`, `signin`, `change`, `verified`, `error`, `resize`, also dispatc
 
 ## React
 
+Copy [`react.jsx`](react.jsx) into your project. It loads the SDK for you:
+
 ```jsx
-import { HumanInput } from 'proofoftype-input/react';
+import { HumanInput } from './react.jsx';
 
 <HumanInput placeholder="Write a comment" onVerified={(r) => save(r.text, r.token)} />
 ```
+
+TypeScript types: [`index.d.ts`](index.d.ts).
 
 ## Privacy
 

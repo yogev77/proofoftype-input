@@ -1,6 +1,6 @@
 // Server-side helper: check a Proof of Type proof token before you save text.
 //
-//   import { verifyProof } from 'proofoftype-input/server';
+//   import { verifyProof } from './server.mjs';   // copy this file into your project
 //   const r = await verifyProof({ token, text, origin: 'https://your-site.com' });
 //   if (!r.ok) throw new Error(r.reason);
 //   r.proof.author  // the Proof of Type username who typed it
