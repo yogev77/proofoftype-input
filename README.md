@@ -153,7 +153,7 @@ This repository: the browser SDK, the React component, the server helper, types 
 
 **Can people paste?** Only links. Autocorrect of typed words is allowed; predictive text, swipe and dictation are not.
 
-**What does it cost?** Our attention, nothing more.
+**What does it cost?** Free for humans.
 
 ## Links
 
